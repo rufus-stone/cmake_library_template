@@ -2,19 +2,10 @@
 
 #include "catch.hpp"
 
+#include <mylib/my_lib.hpp>
+
 ////////////////////////////////////////////////////////////////
-SCENARIO("Test1", "[test][tags]")
+TEST_CASE("Test1", "[test][tags]")
 {
-  GIVEN("X")
-  {
-    int x = 1;
-    WHEN("Y")
-    {
-      int y = 1;
-      THEN("Z")
-      {
-        REQUIRE(x + y == 2);
-      }
-    }
-  }
+  REQUIRE(mylib::foo() == 42);
 }
