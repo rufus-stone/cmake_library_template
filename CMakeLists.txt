@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.15...3.20)
 
-# -------------
-# Project Setup
-# -------------
+# +---------------+
+# | Project Setup |
+# +---------------+
 
 project(
   mylib
@@ -45,9 +45,57 @@ if(NOT DEFINED ${PROJECT_NAME}_MAIN_PROJECT)
   message("${PROJECT_NAME}_MAIN_PROJECT: ${${PROJECT_NAME}_MAIN_PROJECT}")
 endif()
 
-# -------
-# Testing
-# -------
+# +--------------+
+# | Dependencies |
+# +--------------+
+
+# Download Conan script if needed
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+  message(
+    "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+  file(
+    DOWNLOAD
+    "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
+    "${CMAKE_BINARY_DIR}/conan.cmake"
+    EXPECTED_HASH
+      SHA256=396e16d0f5eabdc6a14afddbcfff62a54a7ee75c6da23f32f7a31bc85db23484
+    TLS_VERIFY ON)
+endif()
+
+# Load the Conan script
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+# Configure Conan to grab our dependencies
+conan_cmake_configure(REQUIRES spdlog/1.8.5 GENERATORS cmake_find_package)
+
+# Do some settings stuff??
+conan_cmake_autodetect(settings)
+
+# Install the dependencies
+conan_cmake_install(
+  PATH_OR_REFERENCE
+  .
+  BUILD
+  missing
+  REMOTE
+  conan-center
+  SETTINGS
+  ${settings})
+
+# This is necessary otherwise find_package() doesn't look in the right place for
+# the conan dependencies
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+
+# Find the Conan dependencies
+find_package(spdlog REQUIRED)
+
+# Link in the dependenices
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+
+# +---------+
+# | Testing |
+# +---------+
 
 option(BUILD_${PROJECT_NAME}_TESTS "Build ${PROJECT_NAME} tests"
        ${${PROJECT_NAME}_MAIN_PROJECT})
@@ -62,9 +110,9 @@ if(((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME) OR BUILD_${PROJECT_NAME}_TESTS)
   add_subdirectory(test)
 endif()
 
-# --------------------
-# Library Installation
-# --------------------
+# +----------------------+
+# | Library Installation |
+# +----------------------+
 
 option(INSTALL_${PROJECT_NAME} "Enable installation of ${PROJECT_NAME} library"
        ${${PROJECT_NAME}_MAIN_PROJECT})
