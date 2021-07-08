@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.15...3.20)
 
 project(
   mylib
-  VERSION 0.1.0
+  VERSION 0.2.0
   DESCRIPTION "Example static library"
   LANGUAGES CXX)
 
@@ -15,14 +15,14 @@ message("Configuring ${PROJECT_NAME}...")
 # Get default install locations
 include(GNUInstallDirs)
 
-# Set source files
-set(SOURCE_FILES src/my_lib.cpp src/utils.cpp)
-
 # Create the library
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+add_library(${PROJECT_NAME} STATIC "")
 
 # Add library alias
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+# Set source files
+target_sources(${PROJECT_NAME} PRIVATE src/my_lib.cpp src/utils.cpp)
 
 # We require C++17
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
@@ -33,8 +33,8 @@ target_include_directories(
   PUBLIC $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}/include>
          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-# Check if xmpl is being used as the main project vs. via sub_directory() or
-# similar. We'll use this to enable or disable tests, installation, etc.
+# Check if the library is being used as the main project vs. via sub_directory()
+# or similar. We'll use this to enable or disable tests, installation, etc.
 if(NOT DEFINED ${PROJECT_NAME}_MAIN_PROJECT)
   if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(${PROJECT_NAME}_MAIN_PROJECT ON)
