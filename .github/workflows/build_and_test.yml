@@ -78,9 +78,9 @@ jobs:
         if: ${{matrix.config.os == 'ubuntu-latest'}}
         working-directory: ${{runner.workspace}}
         shell: bash
-        run: ${{runner.workspace}}/build/bin/mylib_tests
+        run: ${{runner.workspace}}/build/test/mylib_tests
 
       - name: Run Tests on Windows
         if: ${{matrix.config.os == 'windows-latest'}}
         working-directory: ${{runner.workspace}}
-        run: ${{runner.workspace}}\\build\\bin\\mylib_tests.exe
+        run: ${{runner.workspace}}\\build\\test\\mylib_tests.exe
