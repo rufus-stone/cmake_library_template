@@ -83,4 +83,4 @@ jobs:
       - name: Run Tests on Windows
         if: ${{matrix.config.os == 'windows-latest'}}
         working-directory: ${{runner.workspace}}
-        run: ${{runner.workspace}}\\build\\test\\mylib_tests.exe
+        run: ${{runner.workspace}}\\build\\test\\Release\\mylib_tests.exe
